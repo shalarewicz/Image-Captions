@@ -90,7 +90,11 @@ public class Rescale implements Expression {
 
 	@Override
 	public Expression layout() {
-		return this;
+		if (this.height == this.expression.getHeight() && this.width == this.expression.getWidth()) {
+			System.out.println("used this");
+			return this.expression.layout();
+		}
+		else {return this;}
 //		// TODO Auto-generated method stub
 //		return null;
 	}

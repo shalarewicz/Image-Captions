@@ -41,7 +41,7 @@ public class SideBySide implements Expression {
 		final int rightHeight = right.getHeight();
 		
 		if (leftHeight > rightHeight) {
-			this.left = left;
+			this.left = left.layout();
 			this.height = leftHeight;
 			
 			final double aspectRatio = right.getWidth() / (double) rightHeight;
@@ -49,10 +49,10 @@ public class SideBySide implements Expression {
 			this.width = (int) newWidth + left.getWidth();
 			
 			//TODO This prevents layout from ever accessing the original size of right
-			this.right = new Rescale(right, (int) newWidth, leftHeight);
+			this.right = new Rescale(right.layout(), (int) newWidth, leftHeight);
 			
 		} else {
-			this.right = right;
+			this.right = right.layout();
 			this.height = rightHeight;
 			
 			final double aspectRatio = left.getWidth() / (double) leftHeight;
@@ -60,7 +60,7 @@ public class SideBySide implements Expression {
 			this.width = (int) newWidth + right.getWidth();
 			
 			//TODO This prevents layout from ever accessing the original size of right
-			this.left = new Rescale(left, (int) newWidth, rightHeight);
+			this.left = new Rescale(left.layout(), (int) newWidth, rightHeight);
 		}
 		
 		this.checkRep();
@@ -114,10 +114,6 @@ public class SideBySide implements Expression {
 
 	@Override
 	public Expression layout() {
-		// layout left, layout right. adjust size of entire
-		Expression left = this.left.layout();
-		Expression right = this.right.layout();
-		System.out.println("Creating rescale in SxS layout");
 		return new Rescale(this, this.getWidth(), this.getHeight());
 	}
 //

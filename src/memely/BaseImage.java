@@ -100,8 +100,6 @@ public class BaseImage implements Expression {
 	
 	@Override
 	public Expression layout() {
-//		return this;
-		// next line puts you in an infinite loop
 		return new Rescale(this, this.getWidth(), this.getHeight());
 	}
 //	

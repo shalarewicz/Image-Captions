@@ -101,11 +101,8 @@ public class ExpressionParser {
             	Expression left = makeAbstractSyntaxTree(children.get(0));
             	for (int i = 1; i < children.size(); i++) {
             		final Expression right = makeAbstractSyntaxTree(children.get(i));
-            		System.out.println("Left is " + left);
-            		System.out.println("Right is " + right);
             		left = new SideBySide(left, right);
             	}
-            	System.out.println(left);
                 return left;
             }
 
