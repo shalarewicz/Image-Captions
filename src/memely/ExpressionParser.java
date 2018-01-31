@@ -7,6 +7,7 @@ import edu.mit.eecs.parserlib.ParseTree;
 import edu.mit.eecs.parserlib.Parser;
 import edu.mit.eecs.parserlib.UnableToParseException;
 import edu.mit.eecs.parserlib.Visualizer;
+import java.util.List;
 
 public class ExpressionParser {
     /**
@@ -74,7 +75,7 @@ public class ExpressionParser {
         System.out.println("parse tree " + parseTree);
 
         // display the parse tree in a web browser, for debugging only
-        Visualizer.showInBrowser(parseTree);
+        // TODO put this back in Visualizer.showInBrowser(parseTree);
 
         // make an AST from the parse tree
         final Expression expression = makeAbstractSyntaxTree(parseTree);
@@ -93,26 +94,66 @@ public class ExpressionParser {
         switch (parseTree.name()) {
         case EXPRESSION: // expression ::= resize ('|' resize)*;
             {
-                // TODO
-                throw new RuntimeException("not implemented");
+            	// Get the expression for the first resize
+            	// then glue it side by side to any subsequent expressions
+            	// TODO What about parentheses???
+            	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+            	Expression left = makeAbstractSyntaxTree(children.get(0));
+            	for (int i = 1; i < children.size(); i++) {
+            		final Expression right = makeAbstractSyntaxTree(children.get(i));
+            		System.out.println("Left is " + left);
+            		System.out.println("Right is " + right);
+            		left = new SideBySide(left, right);
+            	}
+            	System.out.println(left);
+                return left;
             }
 
         case RESIZE: // resize ::= primitive ('@' number 'x' number)?;
             {
-                // TODO
-                throw new RuntimeException("not implemented");
+            	// TODO
+                // TODO This makes me realize we need a number class in order to create the rescale object. I don't think so. 
+            	// Numbers are listed as children in the ASt
+            	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+            	// TODO Remove print statement. Using to see if a Number class needs to be added
+            	final Expression primitive = makeAbstractSyntaxTree(children.get(0));
+            	if (children.size() == 1) {
+            		return primitive;
+            	}
+            	else {
+            		final int width = Integer.parseInt((children.get(1)).text());
+            		final int height = Integer.parseInt(children.get(2).text());
+            		return new Rescale(primitive, width, height);
+            	}
+            	//System.out.println(parseTree.text());
+            	//TODO Return statement
+            	//return primitive;
+//            	final Expression width = makeAbstractSyntaxTree(children.get(1));
+//            	final Expression height = makeAbstractSyntaxTree(children.get(2));
+//            	return new Rescale(primitive, width.getExpression(), height);
             }
             
         case PRIMITIVE: // primitive ::= filename | '(' expression ')';
             {
-                // TODO
-                throw new RuntimeException("not implemented");
+                // TODO I think it's good
+            	final ParseTree<ExpressionGrammar> child = parseTree.children().get(0);
+            	switch (child.name()) {
+            	
+            	case FILENAME:
+            		return makeAbstractSyntaxTree(child);
+            		
+            	case EXPRESSION:
+            		return makeAbstractSyntaxTree(child);
+            		
+            	default:
+                     throw new AssertionError("should never get here");
+            	}
+            		
             }
             
         case FILENAME: // filename ::= [A-Za-z0-9./]+;
             {
-                // TODO
-                throw new RuntimeException("not implemented");
+            	return new BaseImage(parseTree.text());
             }
             
         // ...

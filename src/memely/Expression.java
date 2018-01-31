@@ -3,6 +3,10 @@
  */
 package memely;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+
 /**
  * An immutable data type representing an image expression, as defined
  * in the PS3 handout.
@@ -15,7 +19,12 @@ package memely;
 public interface Expression {
     
     // Datatype definition
-    //   TODO
+    //   Expression = BaseImage(s : String, height: int, width: int) 
+	//				+ BaseImage(file : File);
+	//				+ Caption(S: String);
+	//  			+ Rescale(expression: Expression, height : int, width : int)
+	// 				+ SideBySide(left : Expression, right Expression)
+	// TODO: Top to bottom, upper caption, lower caption
     
     /**
      * Parse an expression.
@@ -24,7 +33,13 @@ public interface Expression {
      * @throws IllegalArgumentException if the expression is syntactically invalid.
      */
     public static Expression parse(String input) {
-        throw new RuntimeException("unimplemented");
+    	try {
+    		return ExpressionParser.parse(input);
+    		
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage() + e.getClass());
+    		throw new IllegalArgumentException("Can't parse input " + input);
+    	}
     }
     
     /**
@@ -50,6 +65,57 @@ public interface Expression {
     @Override
     public int hashCode();
     
+    //TODO implement value and a Number class. Fairly confident this is necessary but not 100%. I no longer believe that it is as
+    // numbers are read by the grammar and listed as children in the AST for a rescale operator which is the only placy they're used
+    // Check the api and print children to see what children returns
+    // Actuall don't need it since we can just parse the text in the switch statement and pull the numbers out
+    // Doesn't make sense since the class NUmber wouldn't follow the specs in Expression (ie generate, layout..)
+    /**
+     * 
+     * @return integer value of the expression. throws exception if expression doesn't represent a number
+     */
+//    public int value();
+    
+    /**
+     * Returns the base expression(s) of the current expression
+     * For example the call getExpression on an expression resizing an object would return the 
+     * expression to be resized. 
+     * 
+     * Calling getExpression on an expression gluing two objects together would return [left, right]
+     * @return a list of base expressions ordered left, right or top, bottom
+     */
+    //TODO: Deprecate
+    public List<Expression> getExpression();
+    
+    /**
+     * Obtain the height of the image represented by the current expression
+     * @return the height of the image
+     * @throws IOException - If file type is invalid
+     */
+    // TODO Get rid of throws clasue. This is lazy and sloppy
+    public int getHeight();
+    
+    /**
+     * Obtain the width of the image represented by the current expression
+     * @return the width of the image
+     */
+    //TODO Get rid of throws clasue. This is lazy and sloppy
+    public int getWidth();
+        
+    /**
+     * 
+     * @return Returns a parsable Expression
+     */
+    //TODO Get rid of throws clasue. This is lazy and sloppy
+    public Expression layout();
+    
+//    /**
+//     * Creates an image from the given expression.
+//     * 
+//     * @return A buffered image representation of the current expression
+//     * @throws IOException 
+//     */
+//    public BufferedImage generate() throws IOException;
     // TODO more instance methods, e.g. you might consider:
     //
     // public Expression layout();
