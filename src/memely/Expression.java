@@ -92,21 +92,18 @@ public interface Expression {
      * @return the height of the image
      * @throws IOException - If file type is invalid
      */
-    // TODO Get rid of throws clasue. This is lazy and sloppy
     public int getHeight();
     
     /**
      * Obtain the width of the image represented by the current expression
      * @return the width of the image
      */
-    //TODO Get rid of throws clasue. This is lazy and sloppy
     public int getWidth();
         
     /**
      * 
      * @return Returns a parsable Expression
      */
-    //TODO Get rid of throws clasue. This is lazy and sloppy
     public Expression layout();
     
 //    /**

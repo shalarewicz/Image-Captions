@@ -193,7 +193,7 @@ public class ExpressionTest {
     public void testInvalidFile() {
     	final Expression test = Expression.parse(INVALID).layout();
     	//TODO: It's possible to create objects with invalid file names. so this should test layout and generate.. 
-    	// assertFalse("fix this thest", true);
+    	assertFalse("fix this thest", true);
     	
     }
     
@@ -221,14 +221,11 @@ public class ExpressionTest {
     @Test
     public void testLayout() {
     	final String test = OPEN_PAREN + FILE + SXS + FILE2 + RESIZE + WIDTH + BY + HEIGHT + CLOSE_PAREN + RESIZE + HEIGHT + BY + WIDTH + SXS + FILE4;
-    	final String test2 = OPEN_PAREN + FILE + SXS + FILE2 + RESIZE + WIDTH + BY + HEIGHT + CLOSE_PAREN + RESIZE + HEIGHT + BY + WIDTH + SXS + FILE4;
+    	final String expected = "(((((img/test.jpg)@1504x1004|(((img/test2.jpg)@1504x1004)@10x20)@502x1004)@2006x1004)@20x10)@2008x1004|(img/test4.jpg)@1504x1004)@3512x1004";
     	final Expression e = Expression.parse(test);
     	Expression layout = e.layout();
     	System.out.println(layout.toString());
-    	//String expected = "(((img/test.jpg|(img/test2.jpg)@10x20)@20x10)@2008x1004|(img/test4.jpg)@1504x1004)@3512x1004";
-    	assertFalse(true);
-    	//TODO Does base image layout need a size????? (if so just layout the rescale object?
-    	
+    	assertEquals(expected,layout.toString());
     }
     
     @Test
