@@ -1,6 +1,8 @@
 package memely;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,15 +97,28 @@ public class Rescale implements Expression {
 			return this.expression.layout();
 		}
 		else {return new Rescale(this.expression.layout(), this.width, this.height);}
-//		// TODO Auto-generated method stub
-//		return null;
 	}
-//
-//	@Override
-//	public BufferedImage generate() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+
+	@Override
+	public BufferedImage generate() throws IOException {
+		final int upperLeftX = 0;
+		final int upperLeftY = 0;
+		final int outputWidth = this.width;
+		final int outputHeight = this.height;
+		final BufferedImage baseImage = this.expression.generate();
+		
+		final BufferedImage output = new BufferedImage(outputWidth, outputHeight, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics graphics = output.getGraphics();
+        
+        final ImageObserver NO_OBSERVER_NEEDED = null;
+        
+        graphics.drawImage(baseImage, 
+                upperLeftX, upperLeftY,
+                outputWidth, outputHeight, 
+                NO_OBSERVER_NEEDED);
+			
+        return output;
+	}
 	
 
 }

@@ -100,12 +100,10 @@ public class BaseImage implements Expression {
 	public Expression layout() {
 		return new Rescale(this, this.getWidth(), this.getHeight());
 	}
-//	
-//	public BufferedImage generate() {
-//		throw new RuntimeException("not implemented");
-//		BufferedImage image = ImageIO.read(new File(this.base));
-//		// TODO What about when the base is text?
-//		BufferedImage text = Examples.con
-//		return image;
-//	}
+	
+	@Override
+	public BufferedImage generate() throws IOException {
+		BufferedImage image = ImageIO.read(new File(this.base));
+		return image;
+	}
 }

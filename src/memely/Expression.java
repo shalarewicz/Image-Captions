@@ -106,17 +106,12 @@ public interface Expression {
      */
     public Expression layout();
     
-//    /**
-//     * Creates an image from the given expression.
-//     * 
-//     * @return A buffered image representation of the current expression
-//     * @throws IOException 
-//     */
-//    public BufferedImage generate() throws IOException;
-    // TODO more instance methods, e.g. you might consider:
-    //
-    // public Expression layout();
-    // public Dimension getSize(); or public int getWidth()/getHeight();
-    // public BufferedImage generate(); 
+    /**
+     * Creates an image from the given expression.
+     * 
+     * @return A buffered image representation of the current expression
+     * @throws IOException 
+     */
+    public BufferedImage generate() throws IOException;
     
 }

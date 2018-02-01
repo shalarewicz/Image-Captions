@@ -1,6 +1,8 @@
 package memely;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +108,7 @@ public class SideBySide implements Expression {
 	public int getHeight() {
 		final int leftHeight = this.left.getHeight();
 		final int rightHeight = this.right.getHeight();
-		return Math.max(leftHeight, rightHeight);
+		return Math.min(leftHeight, rightHeight);
 	}
 
 	@Override
@@ -117,7 +119,7 @@ public class SideBySide implements Expression {
 		final int leftHeight = this.left.getHeight();
 		final int rightHeight = this.right.getHeight();
 		
-		if (leftHeight > rightHeight) {
+		if (rightHeight > leftHeight) {
 			final double aspectRatio = right.getWidth() / (double) rightHeight;
 			double newWidth = aspectRatio * leftHeight;
 			fullWidth = (int) newWidth + left.getWidth();
@@ -140,7 +142,7 @@ public class SideBySide implements Expression {
 		int newHeight;
 		double fullWidth;
 		
-		if (leftHeight > rightHeight) {
+		if (rightHeight > leftHeight) {
 			left = this.left;
 			newHeight = leftHeight;
 			
@@ -165,12 +167,33 @@ public class SideBySide implements Expression {
 		
 			return new Rescale(new SideBySide(left.layout(), right.layout()), (int) fullWidth, newHeight);
 	}
-//
-//	@Override
-//	public BufferedImage generate() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+
+	@Override
+	public BufferedImage generate() throws IOException{
+		final int upperLeftX = 0;
+		final int upperLeftY = 0;
+		final int outputWidth = this.getWidth();
+		final int outputHeight = this.getHeight();
+		
+		final BufferedImage leftImage = this.left.generate();
+		final BufferedImage rightImage = this.right.generate();
+		
+		final BufferedImage output = new BufferedImage(outputWidth, outputHeight, BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics graphics = output.getGraphics();
+        
+        final ImageObserver NO_OBSERVER_NEEDED = null;
+        
+        graphics.drawImage(leftImage, 
+                upperLeftX, upperLeftY,
+                outputWidth / 2, outputHeight, 
+                NO_OBSERVER_NEEDED);
+        graphics.drawImage(rightImage, 
+                outputWidth / 2, upperLeftY,
+                outputWidth / 2, outputHeight, 
+                NO_OBSERVER_NEEDED);
+			
+        return output;
+	}
 	
 
 }
