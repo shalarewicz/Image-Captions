@@ -81,8 +81,7 @@ public class BaseImage implements Expression {
 			return image.getHeight();
 		}
 		catch (Exception e) {
-			return -1;
-//			throw new RuntimeException("Couldn't read image height");
+			throw new IllegalArgumentException();
 		}
 	}
 	
@@ -93,8 +92,7 @@ public class BaseImage implements Expression {
 			return image.getWidth();
 		}
 		catch (Exception e) {
-			return -1;
-			//throw new RuntimeException("Couldn't read image width");
+			throw new IllegalArgumentException();
 		}
 	}
 	

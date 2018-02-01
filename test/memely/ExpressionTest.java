@@ -36,9 +36,9 @@ public class ExpressionTest {
     
     
     
-    private final Expression BASE_IMAGE = new BaseImage("img/test.jpg");
-    private final Expression CAPTION = new BaseImage("img/test.jpg");
-    private final Expression EQUAL_BASE = new BaseImage("img/test.jpg");
+    private final Expression BASE_IMAGE = new BaseImage("test.jpg");
+    private final Expression CAPTION = new BaseImage("\"this is a caption\"");
+    private final Expression EQUAL_BASE = new BaseImage("\"this is a caption\"");
     private final Expression RESCALE_IMAGE = new Rescale(BASE_IMAGE, 37, 8);
     private final Expression RESCALE_CAPTION = new Rescale(CAPTION, 37, 8);
     private final Expression RESCALE_INEQUAL = new Rescale(CAPTION, 37, 9);
@@ -71,7 +71,7 @@ public class ExpressionTest {
     
     @Test
     public void testSideToString() {
-    	String expected = "((test.jpg)@37x8)@37x8|(\"this is a caption\")@37x8";
+    	String expected = "(test.jpg)@37x8|(\"this is a caption\")@37x8";
     	System.out.println(expected);
     	System.out.println(SIDE_RESCALE.toString());
     	assertEquals(expected, SIDE_RESCALE.toString());
@@ -184,19 +184,16 @@ public class ExpressionTest {
     public void testToStringEqualsParse() {
     	final String test = OPEN_PAREN + FILE + SXS + FILE2 + RESIZE + WIDTH + BY + HEIGHT + CLOSE_PAREN + RESIZE + HEIGHT + BY + WIDTH + SXS + FILE4;
     	final Expression e = Expression.parse(test);
-    	System.out.println("Expression is" + e);
-    	System.out.println("Parse result is " + Expression.parse(e.toString()));
-    	System.out.println("test is" + test);
     	assertEquals(e, Expression.parse(e.toString()));
     }
     
     
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     // Tests an unsupported file type
     public void testInvalidFile() {
-    	final Expression test = Expression.parse(INVALID);
-    	//TODO: Write test after parser is updated
-    	assertFalse("fix this thest", true);
+    	final Expression test = Expression.parse(INVALID).layout();
+    	//TODO: It's possible to create objects with invalid file names. so this should test layout and generate.. 
+    	// assertFalse("fix this thest", true);
     	
     }
     
@@ -224,9 +221,11 @@ public class ExpressionTest {
     @Test
     public void testLayout() {
     	final String test = OPEN_PAREN + FILE + SXS + FILE2 + RESIZE + WIDTH + BY + HEIGHT + CLOSE_PAREN + RESIZE + HEIGHT + BY + WIDTH + SXS + FILE4;
+    	final String test2 = OPEN_PAREN + FILE + SXS + FILE2 + RESIZE + WIDTH + BY + HEIGHT + CLOSE_PAREN + RESIZE + HEIGHT + BY + WIDTH + SXS + FILE4;
     	final Expression e = Expression.parse(test);
     	Expression layout = e.layout();
-    	System.out.println("Layout is " + layout);
+    	System.out.println(layout.toString());
+    	//String expected = "(((img/test.jpg|(img/test2.jpg)@10x20)@20x10)@2008x1004|(img/test4.jpg)@1504x1004)@3512x1004";
     	assertFalse(true);
     	//TODO Does base image layout need a size????? (if so just layout the rescale object?
     	
@@ -256,11 +255,25 @@ public class ExpressionTest {
     	final String test = FILE + SXS + FILE2;
     	final String expected = OPEN_PAREN + OPEN_PAREN + FILE + CLOSE_PAREN + RESIZE + WIDTH_TESTS + BY + HEIGHT_TESTS + SXS +
     			OPEN_PAREN + FILE2 + CLOSE_PAREN + RESIZE + WIDTH_TESTS + BY + HEIGHT_TESTS + CLOSE_PAREN + RESIZE + 3008 + BY + HEIGHT_TESTS;
-    	//final Expression e = Expression.parse(test);
     	final Expression layout = Expression.parse(test).layout();
     	assertEquals(expected, layout.toString());
-    	//System.out.println(e);
-    	System.out.println(layout);
+    }
+    
+    @Test
+    // Tests layout for SxS in a Rescale
+    public void testLayoutSxSInResize() {
+    	final String test = OPEN_PAREN + FILE + SXS + FILE2 + CLOSE_PAREN + RESIZE + 10 + BY + 20;
+    	final String expected = "(((img/test.jpg)@1504x1004|(img/test2.jpg)@1504x1004)@3008x1004)@10x20";
+    	final Expression layout = Expression.parse(test).layout();
+    	assertEquals(expected, layout.toString());
+    }
+    
+    @Test
+    // Test layout with three side by sides with no parens
+    public void testTripleSxS() {
+    	final String test = FILE + SXS + FILE2 + SXS + FILE3;
+    	final Expression layout = Expression.parse(test).layout();
+    	System.out.println(layout.toString());
     }
 }
 

@@ -12,7 +12,7 @@ public class SideBySide implements Expression {
 	 * create the new image the smaller iage is shrunk while preserving the aspect ratio. The width is rounded to the nearest integer.
 	 */
 	private final Expression left, right;
-	private final int height, width;
+	// private final int height, width;
 	
 	// Abstraction function
 	// 		AF(left, right) ::= left | right glued side by side
@@ -34,34 +34,34 @@ public class SideBySide implements Expression {
 	 * @param right - expression will appear on the right
 	 */
 	public SideBySide(Expression left, Expression right) {
-//		this.left = left;
-//		this.right = right;
+		this.left = left;
+		this.right = right;
 		
-		final int leftHeight = left.getHeight();
-		final int rightHeight = right.getHeight();
-		
-		if (leftHeight > rightHeight) {
-			this.left = left.layout();
-			this.height = leftHeight;
-			
-			final double aspectRatio = right.getWidth() / (double) rightHeight;
-			final double newWidth = aspectRatio * leftHeight;
-			this.width = (int) newWidth + left.getWidth();
-			
-			//TODO This prevents layout from ever accessing the original size of right
-			this.right = new Rescale(right, (int) newWidth, leftHeight);
-			
-		} else {
-			this.right = right.layout();
-			this.height = rightHeight;
-			
-			final double aspectRatio = left.getWidth() / (double) leftHeight;
-			final double newWidth = aspectRatio * rightHeight;
-			this.width = (int) newWidth + right.getWidth();
-			
-			//TODO This prevents layout from ever accessing the original size of right
-			this.left = new Rescale(left, (int) newWidth, rightHeight);
-		}
+//		final int leftHeight = left.getHeight();
+//		final int rightHeight = right.getHeight();
+//		
+//		if (leftHeight > rightHeight) {
+//			this.left = left.layout();
+//			this.height = leftHeight;
+//			
+//			final double aspectRatio = right.getWidth() / (double) rightHeight;
+//			final double newWidth = aspectRatio * leftHeight;
+//			this.width = (int) newWidth + left.getWidth();
+//			
+//			//TODO This prevents layout from ever accessing the original size of right
+//			this.right = new Rescale(right, (int) newWidth, leftHeight);
+//			
+//		} else {
+//			this.right = right.layout();
+//			this.height = rightHeight;
+//			
+//			final double aspectRatio = left.getWidth() / (double) leftHeight;
+//			final double newWidth = aspectRatio * rightHeight;
+//			this.width = (int) newWidth + right.getWidth();
+//			
+//			//TODO This prevents layout from ever accessing the original size of right
+//			this.left = new Rescale(left, (int) newWidth, rightHeight);
+//		}
 		
 		this.checkRep();
 	}
@@ -104,17 +104,66 @@ public class SideBySide implements Expression {
 	
 	@Override
 	public int getHeight() {
-		return this.height;
+		final int leftHeight = this.left.getHeight();
+		final int rightHeight = this.right.getHeight();
+		return Math.max(leftHeight, rightHeight);
 	}
 
 	@Override
 	public int getWidth() {
-		return this.width;
+		//return this.width;
+		int fullWidth;
+		
+		final int leftHeight = this.left.getHeight();
+		final int rightHeight = this.right.getHeight();
+		
+		if (leftHeight > rightHeight) {
+			final double aspectRatio = right.getWidth() / (double) rightHeight;
+			double newWidth = aspectRatio * leftHeight;
+			fullWidth = (int) newWidth + left.getWidth();
+		} else {
+			final double aspectRatio = left.getWidth() / (double) leftHeight;
+			final double newWidth = aspectRatio * rightHeight;
+			fullWidth = (int) newWidth + right.getWidth();
+		}
+		return fullWidth;
 	}
 
 	@Override
 	public Expression layout() {
-		return new Rescale(this, this.getWidth(), this.getHeight());
+		final int leftHeight = this.left.getHeight();
+		final int rightHeight = this.right.getHeight();
+		
+		Expression left = this.left;
+		Expression right = this.right;
+		
+		int newHeight;
+		double fullWidth;
+		
+		if (leftHeight > rightHeight) {
+			left = this.left;
+			newHeight = leftHeight;
+			
+			final double aspectRatio = right.getWidth() / (double) rightHeight;
+			double newWidth = aspectRatio * leftHeight;
+			fullWidth = (int) newWidth + left.getWidth();
+			
+			//TODO This prevents layout from ever accessing the original size of right
+			right = new Rescale(right, (int) newWidth, leftHeight);
+			
+		} else {
+			right = this.right;
+			newHeight = rightHeight;
+			
+			final double aspectRatio = left.getWidth() / (double) leftHeight;
+			final double newWidth = aspectRatio * rightHeight;
+			fullWidth = (int) newWidth + right.getWidth();
+			
+			//TODO This prevents layout from ever accessing the original size of right
+			left = new Rescale(left, (int) newWidth, rightHeight);
+		}
+		
+			return new Rescale(new SideBySide(left.layout(), right.layout()), (int) fullWidth, newHeight);
 	}
 //
 //	@Override

@@ -72,14 +72,12 @@ public class ExpressionParser {
     public static Expression parse(final String string) throws UnableToParseException {
         // parse the example into a parse tree
         final ParseTree<ExpressionGrammar> parseTree = parser.parse(string);
-        System.out.println("parse tree " + parseTree);
-
+        System.out.println("Parse Tree: " + parseTree);
         // display the parse tree in a web browser, for debugging only
         // TODO put this back in Visualizer.showInBrowser(parseTree);
 
         // make an AST from the parse tree
         final Expression expression = makeAbstractSyntaxTree(parseTree);
-        System.out.println("AST " + expression);
         
         return expression;
     }
