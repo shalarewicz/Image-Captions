@@ -94,7 +94,7 @@ public class Rescale implements Expression {
 			System.out.println("used this");
 			return this.expression.layout();
 		}
-		else {return this;}
+		else {return new Rescale(this.expression.layout(), this.width, this.height);}
 //		// TODO Auto-generated method stub
 //		return null;
 	}

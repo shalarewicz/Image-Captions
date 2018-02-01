@@ -36,9 +36,9 @@ public class ExpressionTest {
     
     
     
-    private final Expression BASE_IMAGE = new BaseImage("test.jpg");
-    private final Expression CAPTION = new BaseImage("\"this is a caption\"");
-    private final Expression EQUAL_BASE = new BaseImage("\"this is a caption\"");
+    private final Expression BASE_IMAGE = new BaseImage("img/test.jpg");
+    private final Expression CAPTION = new BaseImage("img/test.jpg");
+    private final Expression EQUAL_BASE = new BaseImage("img/test.jpg");
     private final Expression RESCALE_IMAGE = new Rescale(BASE_IMAGE, 37, 8);
     private final Expression RESCALE_CAPTION = new Rescale(CAPTION, 37, 8);
     private final Expression RESCALE_INEQUAL = new Rescale(CAPTION, 37, 9);
@@ -244,17 +244,21 @@ public class ExpressionTest {
     @Test
     // Tests layout for Rescale
     public void testLayoutRescale() {
-    	final String test = OPEN_PAREN + FILE + CLOSE_PAREN + RESIZE + WIDTH_TESTS + BY + HEIGHT_TESTS;
+    	final String test = OPEN_PAREN + FILE + CLOSE_PAREN + RESIZE + 10 + BY + 20;
+    	final String expected = OPEN_PAREN + OPEN_PAREN + FILE + CLOSE_PAREN + RESIZE + WIDTH_TESTS + BY + HEIGHT_TESTS + CLOSE_PAREN + RESIZE + 10 + BY + 20;
     	final Expression layout = Expression.parse(test).layout();
-    	assertEquals(test, layout.toString());
+    	assertEquals(expected, layout.toString());
     }
     
     @Test 
     // Tests layout for SideBySide with two Bases
     public void testLayoutSideByside() {
     	final String test = FILE + SXS + FILE2;
+    	final String expected = OPEN_PAREN + OPEN_PAREN + FILE + CLOSE_PAREN + RESIZE + WIDTH_TESTS + BY + HEIGHT_TESTS + SXS +
+    			OPEN_PAREN + FILE2 + CLOSE_PAREN + RESIZE + WIDTH_TESTS + BY + HEIGHT_TESTS + CLOSE_PAREN + RESIZE + 3008 + BY + HEIGHT_TESTS;
     	//final Expression e = Expression.parse(test);
     	final Expression layout = Expression.parse(test).layout();
+    	assertEquals(expected, layout.toString());
     	//System.out.println(e);
     	System.out.println(layout);
     }

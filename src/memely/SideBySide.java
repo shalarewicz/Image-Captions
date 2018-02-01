@@ -49,7 +49,7 @@ public class SideBySide implements Expression {
 			this.width = (int) newWidth + left.getWidth();
 			
 			//TODO This prevents layout from ever accessing the original size of right
-			this.right = new Rescale(right.layout(), (int) newWidth, leftHeight);
+			this.right = new Rescale(right, (int) newWidth, leftHeight);
 			
 		} else {
 			this.right = right.layout();
@@ -60,7 +60,7 @@ public class SideBySide implements Expression {
 			this.width = (int) newWidth + right.getWidth();
 			
 			//TODO This prevents layout from ever accessing the original size of right
-			this.left = new Rescale(left.layout(), (int) newWidth, rightHeight);
+			this.left = new Rescale(left, (int) newWidth, rightHeight);
 		}
 		
 		this.checkRep();
