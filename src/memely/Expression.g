@@ -7,11 +7,10 @@
     sideBySide ::= resize ('|' expression)*;
     topToBottom ::= resize ('---' expression)*;
     resize ::= primitive ('@' number 'x' number)?;
-    primitive ::= filename | '(' expression ')' | captionOperator caption;
+    primitive ::= filename | '(' expression ')' | caption;
 }
 
-captionOperator ::= '_' | '^'*;
-caption ::= '"' .* '"'*;
+caption ::= ('_' | '^') '"' .* '"'*;
 filename ::= [A-Za-z0-9./]+;
 number ::= [0-9]+;
 whitespace ::= [ \t\r\n]+;

@@ -25,7 +25,7 @@ public class ExpressionParser {
     
     // the nonterminals of the grammar
     private enum ExpressionGrammar {
-        EXPRESSION, RESIZE, PRIMITIVE, TOPTOBOTTOM, FILENAME, NUMBER, WHITESPACE, CAPTION, CAPTIONOPERATOR, SIDEBYSIDE
+        EXPRESSION, RESIZE, PRIMITIVE, TOPTOBOTTOM, FILENAME, NUMBER, WHITESPACE, CAPTION, SIDEBYSIDE
     }
 
     private static Parser<ExpressionGrammar> parser = makeParser();
@@ -91,43 +91,52 @@ public class ExpressionParser {
      */
     private static Expression makeAbstractSyntaxTree(final ParseTree<ExpressionGrammar> parseTree) {
         switch (parseTree.name()) {
-        case EXPRESSION: // expression ::= resize ('|' resize)* (topToBottomOperator resize)*;
+        case EXPRESSION: //  expression ::= sideBySide | topToBottom
             {
-            	// Get the expression for the first resize
-            	// then glue it side by side to any subsequent expressions
             	
-            	// TODO What about parentheses??? Looks like they're handled automatically because data type is recursive
-            	// primitive can be composed of expressions enclosed in parentheses
-            	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
-            	Expression left = makeAbstractSyntaxTree(children.get(0));
-            	System.out.println("Current child is" + children);
-            	System.out.println("Size = " + children.size());
-            	for (int i = 1; i < children.size(); i++) {
-            		final Expression right = makeAbstractSyntaxTree(children.get(i));
-            		left = new SideBySide(left, right);
-            		System.out.println("made a side by side");
-            	}
-                return left;
+            	
+            	return makeAbstractSyntaxTree(parseTree.children().get(0));
+//            	// Get the expression for the first resize
+//            	// then glue it side by side to any subsequent expressions
+//            	
+//            	// TODO What about parentheses??? Looks like they're handled automatically because data type is recursive
+//            	// primitive can be composed of expressions enclosed in parentheses
+//            	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+//            	Expression left = makeAbstractSyntaxTree(children.get(0));
+//            	System.out.println("Current child is" + children);
+//            	System.out.println("Size = " + children.size());
+//            	for (int i = 1; i < children.size(); i++) {
+//            		final Expression right = makeAbstractSyntaxTree(children.get(i));
+//            		left = new SideBySide(left, right);
+//            		System.out.println("made a side by side");
+//            	}
+//                return left;
             }
-        case TOPTOBOTTOM:
+        case TOPTOBOTTOM: //  topToBottom ::= resize ('---' expression)*
+           
         {
-        	System.out.println("Found top to bottom");
-        	for (ParseTree<ExpressionGrammar> child : parseTree.children()) {
-        		
-        		System.out.println(child);
+        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+        	Expression top = makeAbstractSyntaxTree(children.get(0));
+        	for (int i = 1; i < children.size(); i++) {
+        		final Expression bottom = makeAbstractSyntaxTree(children.get(i));
+        		top = new TopToBottom(top, bottom);
         	}
-        	System.out.println(parseTree);
-        	return new BaseImage(parseTree.text());
+            return top;
         }
         
-        case SIDEBYSIDE:
+        case SIDEBYSIDE: // sideBySide ::= resize ('|' expression)*;
         {
-        	return new BaseImage(parseTree.text());
+        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+        	Expression left = makeAbstractSyntaxTree(children.get(0));
+        	for (int i = 1; i < children.size(); i++) {
+        		final Expression right = makeAbstractSyntaxTree(children.get(i));
+        		left = new SideBySide(left, right);
+        	}
+            return left;
         }
 
         case RESIZE: // resize ::= primitive ('@' number 'x' number)?;
             {
-            	// TODO
                 // TODO This makes me realize we need a number class in order to create the rescale object. I don't think so. 
             	// Numbers are listed as children in the ASt
             	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
@@ -160,6 +169,8 @@ public class ExpressionParser {
             		
             	case EXPRESSION:
             		return makeAbstractSyntaxTree(child);
+            	case CAPTION:
+            		return makeAbstractSyntaxTree(child);
             		
             	default:
                      throw new AssertionError("should never get here");
@@ -174,6 +185,7 @@ public class ExpressionParser {
             
         case CAPTION: // caption ::= '"' .* '"'*;
         {
+        	System.out.println("Found a caption");
         	return new Caption(parseTree.text());
         }
         

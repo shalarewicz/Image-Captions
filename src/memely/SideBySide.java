@@ -70,9 +70,6 @@ public class SideBySide implements Expression {
 
 	@Override
 	public String toString() {
-//		System.out.println("Using SxS toString");
-//		System.out.println("Left is " + this.left.toString());
-//		System.out.println("Right is " + this.right.toString());
 		return this.left.toString() + "|" + this.right.toString();
 	}
 	
@@ -82,10 +79,6 @@ public class SideBySide implements Expression {
 	}
 	
 	private boolean sameParts(SideBySide that) {
-//		List<Expression> parts = that.getExpression();
-//		Expression left = parts.get(0);
-//		Expression right = parts.get(1);
-//		return this.left.equals(left) && this.right.equals(right);
 		return this.left.equals(that.left) && this.right.equals(that.right);
 		
 	}
@@ -113,7 +106,6 @@ public class SideBySide implements Expression {
 
 	@Override
 	public int getWidth() {
-		//return this.width;
 		int fullWidth;
 		
 		final int leftHeight = this.left.getHeight();
