@@ -20,7 +20,7 @@ public class BaseImage implements Expression {
 	//TODO fix AF, Rep Invariant to account for image;
 	
 	// Abstraction Function
-	//	 AF(base, height width) := an image of size height x width. If base is not a valid image file a image containing the caption name
+	//	 AF(base) := an image;
 	// Rep Invariant
 	//   base != null
 	//   base has a file extension suported by Image I/O package

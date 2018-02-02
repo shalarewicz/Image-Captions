@@ -12,7 +12,7 @@ import org.junit.Test;
  */
 public class CommandsTest {
 
-    // Testing strategy
+    // Commands.layout() Testing strategy
     //   TODO
     
     @Test(expected=AssertionError.class)
@@ -35,7 +35,7 @@ public class CommandsTest {
     private final int HEIGHT_TESTS = 1004;
     private final int WIDTH_TESTS = 1504;
     
-    // TODO tests for Commands.layout() and Commands.generate()
+    // TODO tests for Commands.layout()
     @Test(expected=IllegalArgumentException.class)
     // Tests an unsupported file type
     public void testInvalidFile() {
@@ -51,5 +51,10 @@ public class CommandsTest {
     	System.out.println(layout.toString());
     	assertEquals(expected,layout.toString());
     }
+    
+    
+    //TODO: Comands.generate() Testing Strategy
+    
+    // TODO: Commands.generate tests
     
 }

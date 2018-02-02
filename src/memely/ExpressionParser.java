@@ -25,7 +25,7 @@ public class ExpressionParser {
     
     // the nonterminals of the grammar
     private enum ExpressionGrammar {
-        EXPRESSION, RESIZE, PRIMITIVE, TOPTOBOTTOMOPERATOR, FILENAME, NUMBER, WHITESPACE,
+        EXPRESSION, RESIZE, PRIMITIVE, TOPTOBOTTOM, FILENAME, NUMBER, WHITESPACE, CAPTION, CAPTIONOPERATOR, SIDEBYSIDE
     }
 
     private static Parser<ExpressionGrammar> parser = makeParser();
@@ -72,12 +72,14 @@ public class ExpressionParser {
     public static Expression parse(final String string) throws UnableToParseException {
         // parse the example into a parse tree
         final ParseTree<ExpressionGrammar> parseTree = parser.parse(string);
+        System.out.println("Parse Tree: " + parseTree);
         // display the parse tree in a web browser, for debugging only
         // TODO put this back in Visualizer.showInBrowser(parseTree);
 
         // make an AST from the parse tree
         final Expression expression = makeAbstractSyntaxTree(parseTree);
         
+        System.out.println("AST: " + expression);
         return expression;
     }
     
@@ -89,19 +91,39 @@ public class ExpressionParser {
      */
     private static Expression makeAbstractSyntaxTree(final ParseTree<ExpressionGrammar> parseTree) {
         switch (parseTree.name()) {
-        case EXPRESSION: // expression ::= resize ('|' resize)*;
+        case EXPRESSION: // expression ::= resize ('|' resize)* (topToBottomOperator resize)*;
             {
             	// Get the expression for the first resize
             	// then glue it side by side to any subsequent expressions
-            	// TODO What about parentheses???
+            	
+            	// TODO What about parentheses??? Looks like they're handled automatically because data type is recursive
+            	// primitive can be composed of expressions enclosed in parentheses
             	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
             	Expression left = makeAbstractSyntaxTree(children.get(0));
+            	System.out.println("Current child is" + children);
+            	System.out.println("Size = " + children.size());
             	for (int i = 1; i < children.size(); i++) {
             		final Expression right = makeAbstractSyntaxTree(children.get(i));
             		left = new SideBySide(left, right);
+            		System.out.println("made a side by side");
             	}
                 return left;
             }
+        case TOPTOBOTTOM:
+        {
+        	System.out.println("Found top to bottom");
+        	for (ParseTree<ExpressionGrammar> child : parseTree.children()) {
+        		
+        		System.out.println(child);
+        	}
+        	System.out.println(parseTree);
+        	return new BaseImage(parseTree.text());
+        }
+        
+        case SIDEBYSIDE:
+        {
+        	return new BaseImage(parseTree.text());
+        }
 
         case RESIZE: // resize ::= primitive ('@' number 'x' number)?;
             {
@@ -129,7 +151,7 @@ public class ExpressionParser {
             
         case PRIMITIVE: // primitive ::= filename | '(' expression ')';
             {
-                // TODO I think it's good
+            	System.out.println("found primitive");
             	final ParseTree<ExpressionGrammar> child = parseTree.children().get(0);
             	switch (child.name()) {
             	
@@ -150,6 +172,12 @@ public class ExpressionParser {
             	return new BaseImage(parseTree.text());
             }
             
+        case CAPTION: // caption ::= '"' .* '"'*;
+        {
+        	return new Caption(parseTree.text());
+        }
+        
+        
         // ...
         // TODO more rules
         //

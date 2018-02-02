@@ -148,6 +148,7 @@ public class ExpressionTest {
     // 
     
     private final String SXS = "|";
+    private final String TOP = "---";
     private final String RESIZE = "@";
     private final String FILE = "img/test.jpg";
     private final String FILE2 = "img/test2.jpg";
@@ -185,6 +186,14 @@ public class ExpressionTest {
     	final String test = OPEN_PAREN + FILE + SXS + FILE2 + RESIZE + WIDTH + BY + HEIGHT + CLOSE_PAREN + RESIZE + HEIGHT + BY + WIDTH + SXS + FILE4;
     	final Expression e = Expression.parse(test);
     	assertEquals(e, Expression.parse(e.toString()));
+    }
+    
+    
+    //TODO top to bottom glue tests
+    @Test
+    public void testTopToBottomparser() {
+    	final String test = FILE + TOP + FILE2 + SXS + FILE3;
+    	Expression.parse(test);
     }
     
     
