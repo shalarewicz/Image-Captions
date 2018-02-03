@@ -25,7 +25,7 @@ public class ExpressionParser {
     
     // the nonterminals of the grammar
     private enum ExpressionGrammar {
-        EXPRESSION, RESIZE, PRIMITIVE, TOPTOBOTTOM, FILENAME, NUMBER, WHITESPACE, CAPTION, SIDEBYSIDE
+        EXPRESSION, RESIZE, PRIMITIVE, TOPTOBOTTOM, FILENAME, NUMBER, WHITESPACE, CAPTION, SIDEBYSIDE, TOPOVERLAY, BOTTOMOVERLAY
     }
 
     private static Parser<ExpressionGrammar> parser = makeParser();
@@ -134,7 +134,28 @@ public class ExpressionParser {
         	}
             return left;
         }
+        
+        case TOPOVERLAY: // topOverlay ::= resize ('^' expression)*;
+        {
+        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+        	Expression bottom = makeAbstractSyntaxTree(children.get(0));
+        	for (int i = 1; i < children.size(); i++) {
+        		final Expression top = makeAbstractSyntaxTree(children.get(i));
+        		bottom = new TopOverlay(bottom, top);
+        	}
+        	return bottom;
+        }
 
+        case BOTTOMOVERLAY: //  bottomOverlay ::= resize ('_' expression)*;
+        {
+        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+        	Expression top = makeAbstractSyntaxTree(children.get(0));
+        	for (int i = 1; i < children.size(); i++) {
+        		final Expression bottom = makeAbstractSyntaxTree(children.get(i));
+        		top = new BottomOverlay(bottom, top);
+        	}
+        	return top;
+        }
         case RESIZE: // resize ::= primitive ('@' number 'x' number)?;
             {
                 // TODO This makes me realize we need a number class in order to create the rescale object. I don't think so. 
@@ -160,7 +181,6 @@ public class ExpressionParser {
             
         case PRIMITIVE: // primitive ::= filename | '(' expression ')';
             {
-            	System.out.println("found primitive");
             	final ParseTree<ExpressionGrammar> child = parseTree.children().get(0);
             	switch (child.name()) {
             	
@@ -185,7 +205,6 @@ public class ExpressionParser {
             
         case CAPTION: // caption ::= '"' .* '"'*;
         {
-        	System.out.println("Found a caption");
         	return new Caption(parseTree.text());
         }
         
