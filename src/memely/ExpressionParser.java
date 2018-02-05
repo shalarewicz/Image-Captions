@@ -33,7 +33,7 @@ public class ExpressionParser {
     /**
      * Compile the grammar into a parser.
      * 
-     * @param grammarFilename <b>Must be in this class's Java package.</b>
+     * @param grammarFilename <b>Must be in this class's Java package.</b>S
      * @return parser for the grammar
      * @throws RuntimeException if grammar file can't be read or has syntax errors
      */
