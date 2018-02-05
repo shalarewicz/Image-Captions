@@ -3,16 +3,15 @@
  */
 
 @skip whitespace {
-    expression ::= sideBySide | topToBottom;
-    sideBySide ::= (topOverlay | bottomOverlay | resize) ('|' expression)*;
-    topToBottom ::= (topOverlay | bottomOverlay | resize) ('---' expression)*;
-    topOverlay ::= resize ('^' expression)+;
-    bottomOverlay ::= resize ('_' expression)+;
+    expression ::= resize ((sideBySideOperator resize) | (topToBottomOperator resize) | (topOverlayOperator resize) | (bottomOverlayOperator resize))*;
     resize ::= primitive ('@' number 'x' number)?;
     primitive ::= filename | '(' expression ')' | caption;
 }
-
-caption ::= '"' [A-Za-z0-9 ]* '"'*;
+topToBottomOperator ::= '---' '-'*;
+sideBySideOperator ::= '|';
+topOverlayOperator ::= '^';
+bottomOverlayOperator ::= '_';
 filename ::= [A-Za-z0-9./]+;
+caption ::= '"' [A-Za-z0-9 ]* '"'*;
 number ::= [0-9]+;
 whitespace ::= [ \t\r\n]+;
