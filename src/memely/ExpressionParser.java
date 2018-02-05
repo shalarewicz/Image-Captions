@@ -25,7 +25,7 @@ public class ExpressionParser {
     
     // the nonterminals of the grammar
     private enum ExpressionGrammar {
-        EXPRESSION, RESIZE, PRIMITIVE, TOPTOBOTTOMOPERATOR, FILENAME, NUMBER, WHITESPACE, CAPTION, SIDEBYSIDEOPERATOR, TOPOVERLAYOPERATOR, BOTTOMOVERLAYOPERATOR
+        EXPRESSION, RESIZE, PRIMITIVE, TOPTOBOTTOM, FILENAME, NUMBER, WHITESPACE, CAPTION, SIDEBYSIDE, TOPOVERLAY, BOTTOMOVERLAY
     }
 
     private static Parser<ExpressionGrammar> parser = makeParser();
@@ -71,11 +71,10 @@ public class ExpressionParser {
      */
     public static Expression parse(final String string) throws UnableToParseException {
         // parse the example into a parse tree
-    	System.out.println("input is " + string);
         final ParseTree<ExpressionGrammar> parseTree = parser.parse(string);
         System.out.println("Parse Tree: " + parseTree);
         // display the parse tree in a web browser, for debugging only
-        //Visualizer.showInBrowser(parseTree);
+        // TODO put this back in Visualizer.showInBrowser(parseTree);
 
         // make an AST from the parse tree
         final Expression expression = makeAbstractSyntaxTree(parseTree);
@@ -84,24 +83,6 @@ public class ExpressionParser {
         return expression;
     }
     
-    private static int operatorPriority(ExpressionGrammar op) {
-    	switch (op) {
-    	case TOPOVERLAYOPERATOR:
-    		return TOPOVERLAY_PRIORITY;
-    	case BOTTOMOVERLAYOPERATOR:
-    		return BOTTOMOVERLAY_PRIORITY;
-    	case SIDEBYSIDEOPERATOR:
-    		return SIDEBYSSIDE_PRIORITY;
-    	case TOPTOBOTTOMOPERATOR:
-    		return TOPTOBOTTOM_PRIORITY;
-    	default: throw new AssertionError("Should never get here");
-    	}
-    }
- 
-    private static final int TOPOVERLAY_PRIORITY = 4;
-    private static final int BOTTOMOVERLAY_PRIORITY = 3;
-    private static final int SIDEBYSSIDE_PRIORITY = 2;
-    private static final int TOPTOBOTTOM_PRIORITY = 1;
     /**
      * Convert a parse tree into an abstract syntax tree.
      * 
@@ -109,54 +90,12 @@ public class ExpressionParser {
      * @return abstract syntax tree corresponding to parseTree
      */
     private static Expression makeAbstractSyntaxTree(final ParseTree<ExpressionGrammar> parseTree) {
-    	System.out.println("Trying to match " + parseTree.name());
-    	
         switch (parseTree.name()) {
         case EXPRESSION: //  expression ::= sideBySide | topToBottom
             {
-            	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
-            	Expression current = makeAbstractSyntaxTree(children.get(0));
-            	for (int i = 1; i < children.size() - 1; i=i+2) {
-            		System.out.println(i);
-	            	switch (parseTree.children().get(i).name()) {
-		            	case TOPOVERLAYOPERATOR: {
-		            		System.out.println("found ^ making AST for " + children.get(i + 1));
-		            		final Expression next = makeAbstractSyntaxTree(children.get(i + 1));
-		            		current =  new TopOverlay(current, next);
-		            		continue;
-		            	}
-						case BOTTOMOVERLAYOPERATOR:{
-							//TODO check next operator
-							
-							if (i + 2 < children.size() - 1 && BOTTOMOVERLAY_PRIORITY >= operatorPriority(children.get(i + 2).name())) {
-								System.out.println("found _ making AST for " + children.get(i + 1));
-								final Expression next = makeAbstractSyntaxTree(children.get(i + 1));
-								current =  new BottomOverlay(next, current);
-								continue;						
-							}
-							else {
-								// TODO Put in stack? Look up the calculate algorithm???? this seems wrwong?
-							}
-						}
-						case SIDEBYSIDEOPERATOR:{
-							final Expression next = makeAbstractSyntaxTree(children.get(i + 1));
-		        			current =  new SideBySide(current, next);
-		        			continue;
-						}
-						case TOPTOBOTTOMOPERATOR: {
-							final Expression next = makeAbstractSyntaxTree(children.get(i + 1));
-		        			current =  new TopToBottom(current, next);
-		        			continue;
-						}
-						default: {
-							System.out.println("Couldn't match " + parseTree.children().get(i).name());
-							throw new AssertionError("should never get here in expression");
-						}
-	            	}
-	            //	System.out.println(current);
-            	}
-            	System.out.println("Current");
-            	return current;
+            	
+            	
+            	return makeAbstractSyntaxTree(parseTree.children().get(0));
 //            	// Get the expression for the first resize
 //            	// then glue it side by side to any subsequent expressions
 //            	
@@ -173,51 +112,50 @@ public class ExpressionParser {
 //            	}
 //                return left;
             }
-//        case TOPTOBOTTOMOPERATOR: //  topToBottom ::= resize ('---' expression)*
-//           
-//        {
-//        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
-//        	Expression top = makeAbstractSyntaxTree(children.get(0));
-//        	for (int i = 1; i < children.size(); i++) {
-//        		final Expression bottom = makeAbstractSyntaxTree(children.get(i));
-//        		top = new TopToBottom(top, bottom);
-//        	}
-//            return top;
-//        }
-//        
-//        case SIDEBYSIDEOPERATOR: // sideBySide ::= resize ('|' expression)*;
-//        {
-//        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
-//        	Expression left = makeAbstractSyntaxTree(children.get(0));
-//        	for (int i = 1; i < children.size(); i++) {
-//        		final Expression right = makeAbstractSyntaxTree(children.get(i));
-//        		left = new SideBySide(left, right);
-//        	}
-//            return left;
-//        }
-//        
-//        case TOPOVERLAYOPERATOR: // topOverlay ::= resize ('^' expression)*;
-//        {
-//        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
-//        	System.out.println("Children of ^ are" + children);
-//        	Expression bottom = makeAbstractSyntaxTree(children.get(0));
-//        	for (int i = 1; i < children.size(); i++) {
-//        		final Expression top = makeAbstractSyntaxTree(children.get(i));
-//        		bottom = new TopOverlay(bottom, top);
-//        	}
-//        	return bottom;
-//        }
-//
-//        case BOTTOMOVERLAYOPERATOR: //  bottomOverlay ::= resize ('_' expression)*;
-//        {
-//        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
-//        	Expression top = makeAbstractSyntaxTree(children.get(0));
-//        	for (int i = 1; i < children.size(); i++) {
-//        		final Expression bottom = makeAbstractSyntaxTree(children.get(i));
-//        		top = new BottomOverlay(bottom, top);
-//        	}
-//        	return top;
-//        }
+        case TOPTOBOTTOM: //  topToBottom ::= resize ('---' expression)*
+           
+        {
+        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+        	Expression top = makeAbstractSyntaxTree(children.get(0));
+        	for (int i = 1; i < children.size(); i++) {
+        		final Expression bottom = makeAbstractSyntaxTree(children.get(i));
+        		top = new TopToBottom(top, bottom);
+        	}
+            return top;
+        }
+        
+        case SIDEBYSIDE: // sideBySide ::= resize ('|' expression)*;
+        {
+        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+        	Expression left = makeAbstractSyntaxTree(children.get(0));
+        	for (int i = 1; i < children.size(); i++) {
+        		final Expression right = makeAbstractSyntaxTree(children.get(i));
+        		left = new SideBySide(left, right);
+        	}
+            return left;
+        }
+        
+        case TOPOVERLAY: // topOverlay ::= resize ('^' expression)*;
+        {
+        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+        	Expression bottom = makeAbstractSyntaxTree(children.get(0));
+        	for (int i = 1; i < children.size(); i++) {
+        		final Expression top = makeAbstractSyntaxTree(children.get(i));
+        		bottom = new TopOverlay(bottom, top);
+        	}
+        	return bottom;
+        }
+
+        case BOTTOMOVERLAY: //  bottomOverlay ::= resize ('_' expression)*;
+        {
+        	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
+        	Expression top = makeAbstractSyntaxTree(children.get(0));
+        	for (int i = 1; i < children.size(); i++) {
+        		final Expression bottom = makeAbstractSyntaxTree(children.get(i));
+        		top = new BottomOverlay(bottom, top);
+        	}
+        	return top;
+        }
         case RESIZE: // resize ::= primitive ('@' number 'x' number)?;
             {
                 // TODO This makes me realize we need a number class in order to create the rescale object. I don't think so. 
@@ -276,7 +214,7 @@ public class ExpressionParser {
         //
         
         default:
-            throw new AssertionError("should never get here after caption");
+            throw new AssertionError("should never get here");
         }
 
     }

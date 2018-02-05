@@ -189,20 +189,11 @@ public class ExpressionTest {
     }
     
     
-    //TODO Order of Operations tests
-    
-    @Test public void testOrderofOps() {
-    	final String test = "img/boromir.jpg^\"One does not simply\"_\"Walk into Mordor\"";
-    	final String test2 = FILE + "^\"One does not simply\"" + "_\"caption\"";
-    	Expression.parse(test);
-    }
-    
     //TODO top to bottom glue tests
     @Test
     public void testTopToBottomparser() {
     	final String test = FILE + TOP + FILE2 + SXS + FILE3;
     	Expression.parse(test);
-    	assert false;
     }
     
     
