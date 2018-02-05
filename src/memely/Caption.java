@@ -37,7 +37,7 @@ public class Caption implements Expression {
         graphics.setFont(font);
         
         // get the bounding box of the string, rounding up the coordinates
-        Rectangle2D rectangle = font.getStringBounds(this.caption.substring(1, text.length()-1), graphics.getFontRenderContext());
+        Rectangle2D rectangle = font.getStringBounds(this.caption, graphics.getFontRenderContext());
         //System.out.println(caption + " has rectangle " + rectangle);
         this.width =   (int) Math.ceil(rectangle.getWidth());
         this.height =  (int) Math.ceil(rectangle.getHeight());
@@ -57,11 +57,10 @@ public class Caption implements Expression {
         
         // finally draw the string. drawString's x,y expects the left end of the text *baseline* (instead
         // of the upper left corner of its bounding box), but xOffset and yOffset give us that.
-        graphics.drawString(this.caption.substring(1, text.length()-1), -xOffset, -yOffset);
+        graphics.drawString(this.caption, -xOffset, -yOffset);
         this.image = output;
     }
 	
-
 	@Override
 	public String toString() {
 		return this.caption;
