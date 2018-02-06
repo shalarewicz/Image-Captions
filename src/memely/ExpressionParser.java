@@ -6,7 +6,7 @@ import java.io.IOException;
 import edu.mit.eecs.parserlib.ParseTree;
 import edu.mit.eecs.parserlib.Parser;
 import edu.mit.eecs.parserlib.UnableToParseException;
-import edu.mit.eecs.parserlib.Visualizer;
+//import edu.mit.eecs.parserlib.Visualizer;
 import java.util.List;
 
 public class ExpressionParser {
@@ -72,14 +72,12 @@ public class ExpressionParser {
     public static Expression parse(final String string) throws UnableToParseException {
         // parse the example into a parse tree
         final ParseTree<ExpressionGrammar> parseTree = parser.parse(string);
-        // System.out.println("Parse Tree: " + parseTree);
         // display the parse tree in a web browser, for debugging only
-        Visualizer.showInBrowser(parseTree);
+        // Visualizer.showInBrowser(parseTree);
 
         // make an AST from the parse tree
         final Expression expression = makeAbstractSyntaxTree(parseTree);
         
-       // System.out.println("AST: " + expression);
         return expression;
     }
     
@@ -96,19 +94,6 @@ public class ExpressionParser {
             	
             	
             	return makeAbstractSyntaxTree(parseTree.children().get(0));
-//            	// Get the expression for the first resize
-//            	// then glue it side by side to any subsequent expressions
-//            	
-//            	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
-//            	Expression left = makeAbstractSyntaxTree(children.get(0));
-//            	System.out.println("Current child is" + children);
-//            	System.out.println("Size = " + children.size());
-//            	for (int i = 1; i < children.size(); i++) {
-//            		final Expression right = makeAbstractSyntaxTree(children.get(i));
-//            		left = new SideBySide(left, right);
-//            		System.out.println("made a side by side");
-//            	}
-//                return left;
             }
         case TOPTOBOTTOM: //  topToBottom ::= resize ('---' expression)*
            
@@ -130,7 +115,6 @@ public class ExpressionParser {
         		final Expression right = makeAbstractSyntaxTree(children.get(i));
         			left = new SideBySide(left, right);
         	}
-        	System.out.println("Left is " + left);
             return left;
         }
         
@@ -139,9 +123,7 @@ public class ExpressionParser {
         	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
         	Expression bottom = makeAbstractSyntaxTree(children.get(0));
         	for (int i = 1; i < children.size(); i++) {
-        		System.out.println(children.get(i));
         		final Expression top = makeAbstractSyntaxTree(children.get(i));
-        		System.out.println("Top is " + top);
         		bottom = new TopOverlay(bottom, top);
         	}
         	return bottom;
@@ -169,15 +151,9 @@ public class ExpressionParser {
             		final int height = Integer.parseInt(children.get(2).text());
             		return new Rescale(primitive, width, height);
             	}
-            	//System.out.println(parseTree.text());
-            	//TODO Return statement
-            	//return primitive;
-//            	final Expression width = makeAbstractSyntaxTree(children.get(1));
-//            	final Expression height = makeAbstractSyntaxTree(children.get(2));
-//            	return new Rescale(primitive, width.getExpression(), height);
             }
             
-        case PRIMITIVE: // primitive ::= filename | '(' expression ')';
+        case PRIMITIVE: // primitive ::= filename | '(' expression ')' | caption;
             {
             	final ParseTree<ExpressionGrammar> child = parseTree.children().get(0);
             	switch (child.name()) {
@@ -202,14 +178,9 @@ public class ExpressionParser {
             }
             
         case CAPTION: // caption ::= '"' .* '"'*;
-        {
-        	return new Caption(parseTree.text());
-        }
-        
-        
-        // ...
-        // TODO more rules
-        //
+	        {
+	        	return new Caption(parseTree.text());
+	        }
         
         default:
             throw new AssertionError("should never get here");

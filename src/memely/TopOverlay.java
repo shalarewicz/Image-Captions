@@ -63,7 +63,6 @@ private final Expression bottom, top;
 	}
 
 	private int rescaledHeight() {
-		int newHeight;
 		
 		final int topWidth = this.top.getWidth();
 		final int topHeight = this.top.getHeight();
@@ -96,9 +95,7 @@ private final Expression bottom, top;
 		
 		Expression top = this.top;
 		Expression bottom = this.bottom;
-		System.out.println("Top in layout is " + top);
-		System.out.println("Top layed out is " + this.top.layout());
-		
+
 		int width = this.getWidth();
 		int height = this.getHeight();
 		
@@ -112,8 +109,6 @@ private final Expression bottom, top;
 			final int newTopHeight = this.rescaledHeight();
 			top = new Rescale(top, width, newTopHeight);
 		}
-		System.out.println(this.top);
-		System.out.println("layed out obejct is " + new Rescale(new TopOverlay(bottom.layout(), top.layout()), width, height));
 		return new Rescale(new TopOverlay(bottom.layout(), top.layout()), width, height);
 	}
 
@@ -132,11 +127,8 @@ private final Expression bottom, top;
         
         final ImageObserver NO_OBSERVER_NEEDED = null;
         
-        final int topWidth = top.getHeight();
-        final int bottomWidth = bottom.getHeight();
-        
-        System.out.println("top: " + top);
-        System.out.println("bottom: " + bottom);
+        final int topWidth = top.getWidth();
+        final int bottomWidth = bottom.getWidth();
         
         if (topWidth == bottomWidth) {
         	 graphics.drawImage(bottomImage, 

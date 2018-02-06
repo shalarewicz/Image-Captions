@@ -62,6 +62,25 @@ public class BottomOverlay implements Expression {
 		return height;
 	}
 
+	private int rescaledHeight() {
+		
+		final int topWidth = this.top.getWidth();
+		final int topHeight = this.top.getHeight();
+				
+		final int bottomWidth = this.bottom.getWidth();
+		final int bottomHeight = this.bottom.getHeight();
+		
+		if (topWidth < bottomWidth) {
+			final double aspectRatio = bottomHeight / (double) bottomWidth;
+			double newBottomHeight = aspectRatio * topWidth;
+			return (int) newBottomHeight;
+		} else {
+			final double aspectRatio = topHeight / (double) topWidth;
+			final double newTopHeight = aspectRatio * bottomWidth;
+			return (int) newTopHeight;
+		}
+	}
+	
 	@Override
 	public int getWidth() {
 		final int topWidth = this.top.getWidth();
@@ -110,19 +129,45 @@ public class BottomOverlay implements Expression {
         
         final ImageObserver NO_OBSERVER_NEEDED = null;
         
+        final int topWidth = top.getWidth();
+        final int bottomWidth = bottom.getWidth();
+        
         final int bottomHeight = this.bottom.getHeight();
-        final int xOffset = 0;
         final int yOffset = outputHeight - bottomHeight;
-        System.out.println("Bottom gets drawn at (x, y) = (" + xOffset + ", " + yOffset + ")");
-        System.out.println("Output height = " + outputHeight);
-        graphics.drawImage(topImage, 
-                upperLeftX, upperLeftY,
-                outputWidth, this.top.getHeight(), //TODO: This doesn't seem right
-                NO_OBSERVER_NEEDED);
-        graphics.drawImage(bottomImage, 
-        		xOffset, yOffset,
-                outputWidth, bottomHeight, //TODO: What if bottom gets shrunk to fit the width? it's distorted then
-                NO_OBSERVER_NEEDED);
+        final int rescaledYOffset = outputHeight - this.rescaledHeight();
+
+        if (topWidth == bottomWidth) {
+        	graphics.drawImage(topImage, 
+        			upperLeftX, upperLeftY,
+        			outputWidth, this.top.getHeight(),
+        			NO_OBSERVER_NEEDED);
+        	
+        	graphics.drawImage(bottomImage,
+        			upperLeftX, yOffset,
+        			outputWidth, bottomHeight,
+        			NO_OBSERVER_NEEDED);
+        	
+        } else if (bottomWidth < topWidth) {
+        	graphics.drawImage(topImage,
+        			upperLeftX, upperLeftY,
+        			outputWidth, this.rescaledHeight(),
+        			NO_OBSERVER_NEEDED);
+        	
+        	graphics.drawImage(bottomImage,
+        			upperLeftX, yOffset,
+        			outputWidth, bottomHeight,
+        			NO_OBSERVER_NEEDED);
+        } else {
+        	graphics.drawImage(topImage,
+        			upperLeftX, upperLeftY,
+        			outputWidth, this.top.getHeight(),
+        			NO_OBSERVER_NEEDED);
+        	
+        	graphics.drawImage(bottomImage,
+        			upperLeftX, rescaledYOffset,
+        			outputWidth, this.rescaledHeight(),
+        			NO_OBSERVER_NEEDED);
+        }
 			
         return output;
 	}

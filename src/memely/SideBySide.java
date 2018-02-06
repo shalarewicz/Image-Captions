@@ -39,32 +39,6 @@ public class SideBySide implements Expression {
 		this.left = left;
 		this.right = right;
 		
-//		final int leftHeight = left.getHeight();
-//		final int rightHeight = right.getHeight();
-//		
-//		if (leftHeight > rightHeight) {
-//			this.left = left.layout();
-//			this.height = leftHeight;
-//			
-//			final double aspectRatio = right.getWidth() / (double) rightHeight;
-//			final double newWidth = aspectRatio * leftHeight;
-//			this.width = (int) newWidth + left.getWidth();
-//			
-//			//TODO This prevents layout from ever accessing the original size of right
-//			this.right = new Rescale(right, (int) newWidth, leftHeight);
-//			
-//		} else {
-//			this.right = right.layout();
-//			this.height = rightHeight;
-//			
-//			final double aspectRatio = left.getWidth() / (double) leftHeight;
-//			final double newWidth = aspectRatio * rightHeight;
-//			this.width = (int) newWidth + right.getWidth();
-//			
-//			//TODO This prevents layout from ever accessing the original size of right
-//			this.left = new Rescale(left, (int) newWidth, rightHeight);
-//		}
-		
 		this.checkRep();
 	}
 

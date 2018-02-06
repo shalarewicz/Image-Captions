@@ -113,7 +113,6 @@ public class TopToBottom implements Expression {
 			double newHeight = aspectRatio * topWidth;
 			fullHeight = (int) newHeight + top.getHeight();
 			
-			//TODO This prevents layout from ever accessing the original size of right
 			bottom = new Rescale(bottom, topWidth, (int) newHeight);
 			
 		} else {
@@ -124,7 +123,6 @@ public class TopToBottom implements Expression {
 			final double newHeight = aspectRatio * bottomWidth;
 			fullHeight = (int) newHeight + bottom.getHeight();
 			
-			//TODO This prevents layout from ever accessing the original size of right
 			top = new Rescale(top, bottomWidth, (int) newHeight);
 		}
 		return new Rescale(new TopToBottom(top.layout(), bottom.layout()), newWidth, (int) fullHeight);
@@ -171,7 +169,6 @@ public class TopToBottom implements Expression {
 	                NO_OBSERVER_NEEDED);
 		} else {
 			final int yOffset = outputHeight - bottomHeight;
-			
 			graphics.drawImage(topImage, 
 					upperLeftX, upperLeftY, 
 					outputWidth, this.rescaledHeight(), 

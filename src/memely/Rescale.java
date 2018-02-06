@@ -6,7 +6,7 @@ import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+//import java.util.regex.Pattern;
 
 public class Rescale implements Expression {
 	
@@ -42,7 +42,6 @@ public class Rescale implements Expression {
 	
 	public Rescale(Expression expression) {
 		this.expression = expression;
-		// TODO When I add width and height ops use them get the width and height of the base
 		this.width = expression.getWidth();
 		this.height = expression.getHeight();
 		this.checkRep();
@@ -59,11 +58,6 @@ public class Rescale implements Expression {
 	}
 	
 	private boolean sameExpression(Rescale that) {
-//		int index = that.toString().lastIndexOf("@");
-//		String resize = that.toString().substring(index);
-//		int x = resize.indexOf("x");
-//		int width = Integer.parseInt(resize.substring(0, x));
-//		int height = Integer.parseInt(resize.substring(x));
 		return this.height == that.height && this.width == that.width && this.expression.equals(that.expression);
 	}
 	
@@ -93,7 +87,6 @@ public class Rescale implements Expression {
 	@Override
 	public Expression layout() {
 		if (this.height == this.expression.getHeight() && this.width == this.expression.getWidth()) {
-			System.out.println("used this");
 			return this.expression.layout();
 		}
 		else {return new Rescale(this.expression.layout(), this.width, this.height);}

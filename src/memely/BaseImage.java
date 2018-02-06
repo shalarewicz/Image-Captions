@@ -1,6 +1,7 @@
 package memely;
 
-import java.awt.Image;
+//TODO: Should Image be used at all?
+//import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -54,8 +55,6 @@ public class BaseImage implements Expression {
 	@Override 
 	public boolean equals(Object that) {
 		return that instanceof BaseImage && this.sameBase( (BaseImage) that);
-		
-		//throw new RuntimeException("not implemented");
 	}
 	
 	private boolean sameBase(BaseImage that) {
