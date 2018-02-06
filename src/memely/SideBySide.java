@@ -70,7 +70,7 @@ public class SideBySide implements Expression {
 
 	@Override
 	public String toString() {
-		return this.left.toString() + "|" + this.right.toString();
+		return "(" + this.left.toString() + "|" + this.right.toString() + ")";
 	}
 	
 	@Override 

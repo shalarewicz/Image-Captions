@@ -27,7 +27,7 @@ public class TopToBottom implements Expression {
 	
 	@Override
 	public String toString() {
-		return this.top.toString() + "\n---------\n" + this.bottom.toString();
+		return "(" + this.top.toString() + "\n---------\n" + this.bottom.toString() + ")";
 	}
 	
 	@Override 

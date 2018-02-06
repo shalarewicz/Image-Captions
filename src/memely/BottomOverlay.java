@@ -17,7 +17,7 @@ public class BottomOverlay implements Expression {
 	
 	@Override
 	public String toString() {
-		return top.toString() + "_" + bottom.toString();
+		return "(" + top.toString() + "_" + bottom.toString() + ")";
 	}
 	
 	@Override

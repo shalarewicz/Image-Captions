@@ -74,7 +74,7 @@ public class ExpressionParser {
         final ParseTree<ExpressionGrammar> parseTree = parser.parse(string);
         // System.out.println("Parse Tree: " + parseTree);
         // display the parse tree in a web browser, for debugging only
-        //Visualizer.showInBrowser(parseTree);
+        Visualizer.showInBrowser(parseTree);
 
         // make an AST from the parse tree
         final Expression expression = makeAbstractSyntaxTree(parseTree);
@@ -130,6 +130,7 @@ public class ExpressionParser {
         		final Expression right = makeAbstractSyntaxTree(children.get(i));
         			left = new SideBySide(left, right);
         	}
+        	System.out.println("Left is " + left);
             return left;
         }
         
@@ -138,7 +139,9 @@ public class ExpressionParser {
         	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
         	Expression bottom = makeAbstractSyntaxTree(children.get(0));
         	for (int i = 1; i < children.size(); i++) {
+        		System.out.println(children.get(i));
         		final Expression top = makeAbstractSyntaxTree(children.get(i));
+        		System.out.println("Top is " + top);
         		bottom = new TopOverlay(bottom, top);
         	}
         	return bottom;
@@ -156,10 +159,7 @@ public class ExpressionParser {
         }
         case RESIZE: // resize ::= primitive ('@' number 'x' number)?;
             {
-                // TODO This makes me realize we need a number class in order to create the rescale object. I don't think so. 
-            	// Numbers are listed as children in the ASt
             	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
-            	// TODO Remove print statement. Using to see if a Number class needs to be added
             	final Expression primitive = makeAbstractSyntaxTree(children.get(0));
             	if (children.size() == 1) {
             		return primitive;

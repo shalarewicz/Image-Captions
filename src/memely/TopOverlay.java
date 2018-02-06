@@ -17,7 +17,7 @@ private final Expression bottom, top;
 	
 	@Override
 	public String toString() {
-		return bottom.toString() + "^" + top.toString();
+		return "(" + bottom.toString() + "^" + top.toString() + ")";
 	}
 	
 	@Override
@@ -45,10 +45,10 @@ private final Expression bottom, top;
 		int height;
 		
 		final int topWidth = this.top.getWidth();
-		final int topHeight = top.getHeight();
+		final int topHeight = this.top.getHeight();
 				
 		final int bottomWidth = this.bottom.getWidth();
-		final int bottomHeight = bottom.getHeight();
+		final int bottomHeight = this.bottom.getHeight();
 		
 		if (topWidth < bottomWidth) {
 			final double aspectRatio = bottomHeight / (double) bottomWidth;
@@ -62,6 +62,26 @@ private final Expression bottom, top;
 		return height;
 	}
 
+	private int rescaledHeight() {
+		int newHeight;
+		
+		final int topWidth = this.top.getWidth();
+		final int topHeight = this.top.getHeight();
+				
+		final int bottomWidth = this.bottom.getWidth();
+		final int bottomHeight = this.bottom.getHeight();
+		
+		if (topWidth < bottomWidth) {
+			final double aspectRatio = bottomHeight / (double) bottomWidth;
+			double newBottomHeight = aspectRatio * topWidth;
+			return (int) newBottomHeight;
+		} else {
+			final double aspectRatio = topHeight / (double) topWidth;
+			final double newTopHeight = aspectRatio * bottomWidth;
+			return (int) newTopHeight;
+		}
+	}
+	
 	@Override
 	public int getWidth() {
 		final int topWidth = this.top.getWidth();
@@ -76,23 +96,25 @@ private final Expression bottom, top;
 		
 		Expression top = this.top;
 		Expression bottom = this.bottom;
+		System.out.println("Top in layout is " + top);
+		System.out.println("Top layed out is " + this.top.layout());
 		
 		int width = this.getWidth();
 		int height = this.getHeight();
 		
 		if (topWidth < bottomWidth) {
 			top = this.top;
-			final double aspectRatio = bottom.getHeight() / (double) bottomWidth;
-			double newBottomHeight = aspectRatio * topWidth;
-			bottom = new Rescale(bottom, width, (int) newBottomHeight);
+			int newBottomHeight = this.rescaledHeight();
+			bottom = new Rescale(bottom, width, newBottomHeight);
 			
 		} else {
 			bottom = this.bottom;
-			final double aspectRatio = top.getHeight() / (double) topWidth;
-			final double newTopHeight = aspectRatio * bottomWidth;
-			top = new Rescale(top, width, (int) newTopHeight);
+			final int newTopHeight = this.rescaledHeight();
+			top = new Rescale(top, width, newTopHeight);
 		}
-		return new Rescale(new TopOverlay(bottom.layout(), top.layout()),width, height);
+		System.out.println(this.top);
+		System.out.println("layed out obejct is " + new Rescale(new TopOverlay(bottom.layout(), top.layout()), width, height));
+		return new Rescale(new TopOverlay(bottom.layout(), top.layout()), width, height);
 	}
 
 	@Override
@@ -110,14 +132,43 @@ private final Expression bottom, top;
         
         final ImageObserver NO_OBSERVER_NEEDED = null;
         
-        graphics.drawImage(bottomImage, 
-                upperLeftX, upperLeftY,
-                outputWidth, this.bottom.getHeight(), 
-                NO_OBSERVER_NEEDED);
-        graphics.drawImage(topImage, 
-                upperLeftX, upperLeftY,
-                outputWidth, this.top.getHeight(), 
-                NO_OBSERVER_NEEDED);
+        final int topWidth = top.getHeight();
+        final int bottomWidth = bottom.getHeight();
+        
+        System.out.println("top: " + top);
+        System.out.println("bottom: " + bottom);
+        
+        if (topWidth == bottomWidth) {
+        	 graphics.drawImage(bottomImage, 
+                     upperLeftX, upperLeftY,
+                     outputWidth, this.bottom.getHeight(), 
+                     NO_OBSERVER_NEEDED);
+             graphics.drawImage(topImage, 
+                     upperLeftX, upperLeftY,
+                     outputWidth, this.top.getHeight(), 
+                     NO_OBSERVER_NEEDED);	
+        }
+        else if (topWidth < bottomWidth) {
+        	 graphics.drawImage(bottomImage, 
+                     upperLeftX, upperLeftY,
+                     outputWidth, this.rescaledHeight(), 
+                     NO_OBSERVER_NEEDED);
+             graphics.drawImage(topImage, 
+                     upperLeftX, upperLeftY,
+                     outputWidth, this.top.getHeight(), 
+                     NO_OBSERVER_NEEDED);
+        }
+        else {
+        	 graphics.drawImage(bottomImage, 
+                     upperLeftX, upperLeftY,
+                     outputWidth, this.bottom.getHeight(), 
+                     NO_OBSERVER_NEEDED);
+             graphics.drawImage(topImage, 
+                     upperLeftX, upperLeftY,
+                     outputWidth, this.rescaledHeight(), 
+                     NO_OBSERVER_NEEDED);	
+        }
+        
 			
         return output;
 	}
