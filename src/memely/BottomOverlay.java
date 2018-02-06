@@ -17,7 +17,7 @@ public class BottomOverlay implements Expression {
 	
 	@Override
 	public String toString() {
-		return bottom.toString() + "_" + top.toString();
+		return top.toString() + "_" + bottom.toString();
 	}
 	
 	@Override
@@ -113,14 +113,15 @@ public class BottomOverlay implements Expression {
         final int bottomHeight = this.bottom.getHeight();
         final int xOffset = 0;
         final int yOffset = outputHeight - bottomHeight;
-        
+        System.out.println("Bottom gets drawn at (x, y) = (" + xOffset + ", " + yOffset + ")");
+        System.out.println("Output height = " + outputHeight);
         graphics.drawImage(topImage, 
                 upperLeftX, upperLeftY,
-                outputWidth, this.top.getHeight(), 
+                outputWidth, this.top.getHeight(), //TODO: This doesn't seem right
                 NO_OBSERVER_NEEDED);
         graphics.drawImage(bottomImage, 
         		xOffset, yOffset,
-                outputWidth, bottomHeight, 
+                outputWidth, bottomHeight, //TODO: What if bottom gets shrunk to fit the width? it's distorted then
                 NO_OBSERVER_NEEDED);
 			
         return output;

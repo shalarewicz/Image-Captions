@@ -104,6 +104,22 @@ public class SideBySide implements Expression {
 		return Math.min(leftHeight, rightHeight);
 	}
 
+	
+	private int rescaledWidth() {
+		double newWidth;
+		
+		final int leftHeight = this.left.getHeight();
+		final int rightHeight = this.right.getHeight();
+		
+		if (rightHeight > leftHeight) {
+			final double aspectRatio = right.getWidth() / (double) rightHeight;
+			newWidth = aspectRatio * leftHeight;
+		} else {
+			final double aspectRatio = left.getWidth() / (double) leftHeight;
+			newWidth = aspectRatio * rightHeight;
+		}
+		return (int) newWidth;
+	}
 	@Override
 	public int getWidth() {
 		int fullWidth;
@@ -164,6 +180,7 @@ public class SideBySide implements Expression {
 	public BufferedImage generate() throws IOException{
 		final int upperLeftX = 0;
 		final int upperLeftY = 0;
+		
 		final int outputWidth = this.getWidth();
 		final int outputHeight = this.getHeight();
 		
@@ -171,18 +188,47 @@ public class SideBySide implements Expression {
 		final BufferedImage rightImage = this.right.generate();
 		
 		final BufferedImage output = new BufferedImage(outputWidth, outputHeight, BufferedImage.TYPE_4BYTE_ABGR);
-        final Graphics graphics = output.getGraphics();
-        
-        final ImageObserver NO_OBSERVER_NEEDED = null;
-        
-        graphics.drawImage(leftImage, 
-                upperLeftX, upperLeftY,
-                outputWidth / 2, outputHeight, 
-                NO_OBSERVER_NEEDED);
-        graphics.drawImage(rightImage, 
-                outputWidth / 2, upperLeftY,
-                outputWidth / 2, outputHeight, 
-                NO_OBSERVER_NEEDED);
+		final Graphics graphics = output.getGraphics();
+
+		final ImageObserver NO_OBSERVER_NEEDED = null;
+
+		final int leftHeight = this.left.getHeight();
+		final int rightHeight = this.right.getHeight();
+		
+		if (leftHeight == rightHeight) {
+			 graphics.drawImage(leftImage, 
+		                upperLeftX, upperLeftY,
+		                this.left.getWidth(), outputHeight, 
+		                NO_OBSERVER_NEEDED);
+			 graphics.drawImage(rightImage, 
+		                this.left.getWidth(), upperLeftY,
+		                this.right.getWidth(), outputHeight, //TODO: Need to draw at resized right Width
+		                NO_OBSERVER_NEEDED);
+		} else if (leftHeight < rightHeight) {
+			
+			graphics.drawImage(leftImage, 
+	                upperLeftX, upperLeftY,
+	                this.left.getWidth(), outputHeight, 
+	                NO_OBSERVER_NEEDED);
+			
+			graphics.drawImage(rightImage, 
+					this.left.getWidth(), upperLeftY, 
+					this.rescaledWidth(), outputHeight, 
+					NO_OBSERVER_NEEDED);
+		} else {
+			final int rightWidth = this.right.getWidth();
+			final int xOffset = outputWidth - rightWidth;
+			
+			graphics.drawImage(leftImage, 
+					upperLeftX, upperLeftY, 
+					this.rescaledWidth(), outputHeight, 
+					NO_OBSERVER_NEEDED);
+			
+			graphics.drawImage(rightImage,
+					xOffset, upperLeftY,
+					rightWidth, outputHeight, 
+					NO_OBSERVER_NEEDED);
+		}
 			
         return output;
 	}

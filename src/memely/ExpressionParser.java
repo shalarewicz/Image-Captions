@@ -72,14 +72,14 @@ public class ExpressionParser {
     public static Expression parse(final String string) throws UnableToParseException {
         // parse the example into a parse tree
         final ParseTree<ExpressionGrammar> parseTree = parser.parse(string);
-        System.out.println("Parse Tree: " + parseTree);
+        // System.out.println("Parse Tree: " + parseTree);
         // display the parse tree in a web browser, for debugging only
-        // TODO put this back in Visualizer.showInBrowser(parseTree);
+        //Visualizer.showInBrowser(parseTree);
 
         // make an AST from the parse tree
         final Expression expression = makeAbstractSyntaxTree(parseTree);
         
-        System.out.println("AST: " + expression);
+       // System.out.println("AST: " + expression);
         return expression;
     }
     
@@ -99,8 +99,6 @@ public class ExpressionParser {
 //            	// Get the expression for the first resize
 //            	// then glue it side by side to any subsequent expressions
 //            	
-//            	// TODO What about parentheses??? Looks like they're handled automatically because data type is recursive
-//            	// primitive can be composed of expressions enclosed in parentheses
 //            	final List<ParseTree<ExpressionGrammar>> children = parseTree.children();
 //            	Expression left = makeAbstractSyntaxTree(children.get(0));
 //            	System.out.println("Current child is" + children);
@@ -130,7 +128,7 @@ public class ExpressionParser {
         	Expression left = makeAbstractSyntaxTree(children.get(0));
         	for (int i = 1; i < children.size(); i++) {
         		final Expression right = makeAbstractSyntaxTree(children.get(i));
-        		left = new SideBySide(left, right);
+        			left = new SideBySide(left, right);
         	}
             return left;
         }

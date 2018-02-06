@@ -71,6 +71,22 @@ public class TopToBottom implements Expression {
 		return fullHeight;
 	}
 
+	private int rescaledHeight() {
+		double newHeight;
+		
+		final int topWidth = this.top.getWidth();
+		final int bottomWidth = this.bottom.getWidth();
+		
+		if (topWidth < bottomWidth) {
+			final double aspectRatio = bottom.getHeight() / (double) bottomWidth;
+			newHeight = aspectRatio * topWidth;
+		} else {
+			final double aspectRatio = top.getHeight() / (double) topWidth;
+			newHeight = aspectRatio * bottomWidth;
+		}
+		return (int) newHeight;
+	}
+	
 	@Override
 	public int getWidth() {
 		final int topWidth = this.top.getWidth();
@@ -118,6 +134,7 @@ public class TopToBottom implements Expression {
 	public BufferedImage generate() throws IOException {
 		final int upperLeftX = 0;
 		final int upperLeftY = 0;
+		
 		final int outputWidth = this.getWidth();
 		final int outputHeight = this.getHeight();
 		
@@ -129,14 +146,42 @@ public class TopToBottom implements Expression {
         
         final ImageObserver NO_OBSERVER_NEEDED = null;
         
-        graphics.drawImage(topImage, 
-                upperLeftX, upperLeftY,
-                outputWidth, outputHeight / 2, 
-                NO_OBSERVER_NEEDED);
-        graphics.drawImage(bottomImage, 
-                upperLeftX, outputHeight / 2,
-                outputWidth, outputHeight / 2, 
-                NO_OBSERVER_NEEDED);
+        final int topWidth = this.top.getWidth();
+		final int bottomWidth = this.bottom.getWidth();
+		final int topHeight = this.top.getHeight();
+		final int bottomHeight = this.bottom.getHeight();
+        
+		if (topWidth == bottomWidth) {
+			graphics.drawImage(topImage, 
+	                upperLeftX, upperLeftY,
+	                outputWidth, topHeight, 
+	                NO_OBSERVER_NEEDED);
+	        graphics.drawImage(bottomImage, 
+	                upperLeftX, topHeight,
+	                outputWidth, bottomHeight, 
+	                NO_OBSERVER_NEEDED);
+		} else if (topWidth < bottomWidth) {
+			graphics.drawImage(topImage, 
+	                upperLeftX, upperLeftY,
+	                outputWidth, topHeight, 
+	                NO_OBSERVER_NEEDED);
+	        graphics.drawImage(bottomImage, 
+	                upperLeftX, topHeight,
+	                outputWidth, this.rescaledHeight(), 
+	                NO_OBSERVER_NEEDED);
+		} else {
+			final int yOffset = outputHeight - bottomHeight;
+			
+			graphics.drawImage(topImage, 
+					upperLeftX, upperLeftY, 
+					outputWidth, this.rescaledHeight(), 
+					NO_OBSERVER_NEEDED);
+			
+			graphics.drawImage(bottomImage,
+					upperLeftX, yOffset,
+					outputWidth, bottomHeight,
+					NO_OBSERVER_NEEDED);
+		}
 			
         return output;
 	}

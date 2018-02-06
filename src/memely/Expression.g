@@ -3,11 +3,11 @@
  */
 
 @skip whitespace {
-    expression ::= sideBySide | topToBottom;
-    sideBySide ::= (topOverlay | bottomOverlay | resize) ('|' expression)*;
-    topToBottom ::= (topOverlay | bottomOverlay | resize) ('---' expression)*;
-    topOverlay ::= resize ('^' expression)+;
-    bottomOverlay ::= resize ('_' expression)+;
+    expression ::= topToBottom;
+    topToBottom ::= sideBySide ('---' '-'* sideBySide)*;
+    sideBySide ::= bottomOverlay ('|' bottomOverlay)*;
+    bottomOverlay ::= topOverlay ('_' topOverlay)*;
+    topOverlay ::= resize ('^' resize)*;
     resize ::= primitive ('@' number 'x' number)?;
     primitive ::= filename | '(' expression ')' | caption;
 }
